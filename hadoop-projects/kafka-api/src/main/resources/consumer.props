@@ -1,0 +1,25 @@
+bootstrap.servers=cmhlddlkedat01.expdev.local:6667,cmhlddlkedat02.expdev.local:6667,cmhlddlkedat03.expdev.local:6667
+#bootstrap.servers=0.0.0.0:9092
+group.id=test-group
+enable.auto.commit=true
+auto.offset.reset=earliest
+key.deserializer=org.apache.kafka.common.serialization.StringDeserializer
+value.deserializer=org.apache.kafka.common.serialization.StringDeserializer
+
+# fast session timeout makes it more fun to play with failover
+#session.timeout.ms=10000
+
+# These buffer sizes seem to be needed to avoid consumer switching to
+# a mode where it processes one bufferful every 5 seconds with multiple
+# timeouts along the way.  No idea why this happens.
+fetch.min.bytes=50000
+receive.buffer.bytes=262144
+max.partition.fetch.bytes=2097152
+
+security.protocol=SASL_PLAINTEXT
+#sasl.kerberos.service.name=kafka
+topic.name=test-topic
+
+java.security.krb5.conf=/etc/krb5.conf
+java.security.auth.login.config=/etc/kafka/conf/kafka_client_jaas.conf
+javax.security.auth.useSubjectCredsOnly=false

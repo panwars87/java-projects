@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xmlns:aop="http://www.springframework.org/schema/aop"    
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	   					   http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+	   					   http://www.springframework.org/schema/context
+       					   http://www.springframework.org/schema/context/spring-context-4.1.xsd	
+       					   http://www.springframework.org/schema/util 
+       					   http://www.springframework.org/schema/util/spring-util-4.1.xsd   
+       					   http://www.springframework.org/schema/jdbc 
+       					   http://www.springframework.org/schema/jdbc/spring-jdbc-4.1.xsd 			   
+	   					   http://www.springframework.org/schema/aop 
+						   http://www.springframework.org/schema/aop/spring-aop-4.1.xsd	
+						   http://www.springframework.org/schema/task 
+						   http://www.springframework.org/schema/task/spring-task-4.1.xsd							   
+						   ">
+					  
+	<context:property-placeholder location="classpath:util.properties" />		
+
+    <!-- constructor injection -->
+	<!-- <bean id="postManager" class="spring.mvc.dependency.injection.PostManager" scope="singleton"> 
+		<constructor-arg name="postService" ref="postService"/>
+		<constructor-arg name="enableService" value="true"/>
+	</bean> -->
+	
+	<!-- setter injection -->
+	<bean id="postManager" class="spring.mvc.dependency.injection.PostManager" scope="singleton"> 
+		<property name="postService" ref="postService"/>
+		<property name="enabled" value="true"/>
+	</bean>
+	
+	<bean id="postService" class="spring.mvc.dependency.injection.TwitterPostService" />
+
+	<!-- XML Bean Definitions -->	
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${jdbc.hsqldb.driverClass}" />
+		<property name="url" value="${jdbc.hsqldb.url}" />
+		<property name="username" value="${jdbc.hsqldb.username}" />
+		<property name="password" value="${jdbc.hsqldb.password}" />
+	</bean>
+		
+	<!-- initialize Embedded DataSource -->
+	<jdbc:initialize-database data-source="dataSource">
+        <jdbc:script location="classpath:dbschema.sql"/>
+        <jdbc:script location="classpath:test-data.sql"/>
+    </jdbc:initialize-database>
+   
+	<!-- Java Mail Configuration -->    
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="username" value="${java.mail.username}"/>
+        <property name="password" value="${java.mail.password}"/>
+        <property name="port" value="465"/>        
+        <property name="javaMailProperties">
+            <props>
+                <prop key="mail.smtp.auth">true</prop>
+                <prop key="mail.smtp.starttls.enable">true</prop>
+                <prop key="mail.smtp.starttls.required">true</prop> 
+                <prop key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</prop>
+                <prop key="mail.smtp.host">${java.mail.host}</prop>      
+            </props>
+        </property>
+    </bean>
+    
+    <!-- Velocity Email Template Config Bean -->
+    <bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+    	<property name="resourceLoaderPath" value="/WEB-INF/email-templates/"/>
+    </bean>
+    
+    <task:annotation-driven/>
+    
+    <!-- Quartz scheduling configuration -->    
+    <!-- Quartz simple trigger -->
+    <bean id="simpleTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">  
+  		<property name="jobDetail" ref="simpleQuartzJob" />  
+  		<property name="repeatInterval" value="1000" />  
+  		<property name="startDelay" value="1000" />  
+ 	</bean>  
+ 	
+ 	<!-- Quartz cron trigger -->
+ 	<bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="quarztCronJob"/>
+		<property name="cronExpression" value="0/30 * * * * ?" />
+		<!-- every 30 seconds (seconds, minutes, hours, day of month, month, day of week, year(optional)) -->
+	</bean>	
+ 	
+ 	<!-- Quartz job -->
+    <bean id="simpleQuartzJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">  
+  		<property name="targetObject" ref="simpleQuartzTask" />  
+ 		<property name="targetMethod" value="simpleTaskMethod" />  
+ 	</bean>  
+    
+    <!-- Quartz cron job -->
+    <bean id="quarztCronJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">  
+  		<property name="targetObject" ref="cronQuartzTask" />  
+ 		<property name="targetMethod" value="cronTaskMethod" />  
+ 	</bean> 
+ 	
+    <!-- Quartz task -->
+    <bean id="simpleQuartzTask" class="spring.mvc.quartz.QuartzTask" />  
+    
+    <!-- Quartz task -->
+    <bean id="cronQuartzTask" class="spring.mvc.quartz.CronQuartzTask" />  
+    
+    <!-- Quartz Scheduler -->
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="jobDetails">
+            <list>
+                <ref bean="simpleQuartzJob" />
+                <ref bean="quarztCronJob" /> 
+            </list>
+        </property> 
+        <property name="triggers">
+            <list>
+                <ref bean="simpleTrigger" />
+                <ref bean="cronTrigger" />
+            </list>
+        </property>
+    </bean>
+    
+     <!-- JPA Persistence Context and EntityManager configuration -->
+	<bean id="entityManagerFactory"
+        class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" >
+        <property name="packagesToScan" value="spring.mvc.bean" />
+        <property name="dataSource" ref="dataSource" />
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" >
+            	<property name="generateDdl" value="true" />
+				<property name="showSql" value="true" />				
+            </bean>
+        </property>
+        <property name="jpaProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.format_sql">false</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop> 			                               
+            </props>
+        </property>
+    </bean>    
+ 
+   	<!-- Automatic Transaction Participation-->
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+    	<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean> 
+  
+    <!-- @Scheduled task configuration -->
+    <!-- uncomment<bean id="scheduleTask" class="spring.mvc.schedule.ScheduleTask"/>-->
+    
+    <!-- REST template configuration -->
+    <bean id="restTemplate" class="org.springframework.web.client.RestTemplate"/>
+    
+<!--     <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+    	<property name="dataSource" ref="dataSource"></property>
+    </bean>
+     -->
+    
+    <bean id="sampleBean" class="spring.mvc.bean.SampleBean">
+    	<property name="sampleId" value="4"></property>
+    	<property name="sampleText" value="sampletext"></property>
+    </bean>
+    
+    
+</beans>
+          

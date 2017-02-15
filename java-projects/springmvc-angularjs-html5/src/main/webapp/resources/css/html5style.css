@@ -1,0 +1,35 @@
+/*element selection*/
+body {
+	margin: 0 auto;
+    width: 900px;
+    font: 14px Helvetica, Arial, sans-serif;
+    background: #f0f0f0;
+}
+article
+{
+	margin: 10px;
+	padding: 2px;
+	background-color: aqua;
+}
+section
+{    padding-top:10px;
+	 padding-left:10px;
+	 padding-right:10px;
+	 padding-bottom:10px;
+     background-color: #0080c0;
+}
+
+/*element selection*/
+h2
+{	
+	color: blue;
+}
+/*id selection*/
+#idtag {
+	background-color: black;	
+}
+
+/*class selection*/
+.classtag {	
+	color: gray;	
+}

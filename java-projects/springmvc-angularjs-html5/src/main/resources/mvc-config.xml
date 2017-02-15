@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:mvc="http://www.springframework.org/schema/mvc" 
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:security="http://www.springframework.org/schema/security"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xsi:schemaLocation="http://www.springframework.org/schema/mvc 
+	  					   http://www.springframework.org/schema/mvc/spring-mvc.xsd
+						   http://www.springframework.org/schema/beans 
+						   http://www.springframework.org/schema/beans/spring-beans.xsd
+						   http://www.springframework.org/schema/context 
+						   http://www.springframework.org/schema/context/spring-context.xsd
+						   http://www.springframework.org/schema/security 
+                           http://www.springframework.org/schema/security/spring-security-4.0.xsd
+                           http://www.springframework.org/schema/tx 
+           				   http://www.springframework.org/schema/tx/spring-tx-4.1.xsd  		
+                           ">
+
+    <security:global-method-security pre-post-annotations="enabled" secured-annotations="enabled" jsr250-annotations="enabled"/>
+
+	<!-- context:component-scan This tag will scan @Component, @Repository, @Service, @Controller	
+		 and also resolves @Autowired and @Qualifier -->
+	<context:component-scan base-package="spring.mvc" />
+	
+	<!-- 
+		mvc:annotation-driven configures Spring MVC annotations
+		Support for validating @Controller inputs with @Valid, if a JSR-303 Provider is present on the classpath.
+		HttpMessageConverter support for @RequestBody method parameters and @ResponseBody method return values 
+		from @RequestMapping or @ExceptionHandler methods.
+	 -->	 
+	<mvc:annotation-driven>
+		 <mvc:message-converters>
+            <bean id="jacksonHttpMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                <property name="prettyPrint" value="true" />
+            </bean>
+        </mvc:message-converters>	
+	</mvc:annotation-driven>	
+	
+	<!-- activate @Transactional JPA annotation -->
+    <tx:annotation-driven/>
+	
+	<mvc:interceptors>
+	   	<mvc:interceptor>
+	     	<mvc:mapping path="/*" />
+	     	<bean class="spring.mvc.interceptor.SiteInterceptor" />
+	   	</mvc:interceptor>
+	   	<mvc:interceptor>
+	   	<mvc:mapping path="/*" />
+	   		<bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+				<property name="paramName" value="language" />
+			</bean>
+	   	</mvc:interceptor>
+	</mvc:interceptors>
+	
+	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+		<property name="defaultLocale" value="en" />		
+		<!-- cookieMaxAge in seconds. if you set it to -1, the cookie will be deleted when browser is closed) -->
+		<property name="cookieMaxAge" value="100000"/>
+	</bean>
+ 	
+ 	<!-- MessageSource ReloadableResourceBundleMessageSource configuration -->
+	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">  
+    	<property name="basenames" value="classpath:lang,classpath:util"/>  
+    	<property name="cacheSeconds" value="1"/>
+  	</bean>  
+  
+    <!-- Controller BeanNameUrlHandlerMapping -->
+    <bean name="/controllerBeanName.html" class="spring.mvc.controller.ControllerBeanNameUrlHandlerMapping" />
+ 
+ 	<!-- Controller ControllerClassNameHandlerMapping -->
+ 	<bean class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping"/>
+
+    <bean class="spring.mvc.controller.ControllerClassNameHandlerMapping" />
+    
+    <!-- Controller with XML Configuration -->
+    <bean id="controllerWithXMLConfig" class="spring.mvc.controller.ControllerXMLConfig" />
+	<bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="mappings">
+			<props>
+				<prop key="/controllerWithXMLConfig.html">controllerWithXMLConfig</prop>
+			</props>
+		</property>
+	</bean>     
+   
+   <!-- other option is UrlFilenameViewController -->
+	<mvc:view-controller path="/" view-name="/index"/>
+	<mvc:view-controller path="/index.html" view-name="/index"/>
+	<mvc:view-controller path="/html5.html" view-name="/html5/html5"/>
+	<mvc:view-controller path="/about.html" view-name="/about"/>
+    <mvc:view-controller path="/admin/admin.html" view-name="/admin/admin"/>
+	<mvc:view-controller path="/login.html" view-name="/form/login"/>
+	<mvc:view-controller path="/denied.html" view-name="/error/denied"/>
+    <mvc:view-controller path="/rest.html" view-name="/rest/rest"/>
+    <mvc:view-controller path="/file.html" view-name="/file/file"/>
+    <mvc:view-controller path="/cookieView.html" view-name="/cookie/cookieView"/>
+    <mvc:view-controller path="/jstl.html" view-name="/jstl/jstl"/>
+    <mvc:view-controller path="/audiovideo.html" view-name="/audiovideo/audiovideo"/>    
+    <mvc:view-controller path="/jdbc.html" view-name="/jdbc/jdbc"/>
+    <mvc:view-controller path="/orm.html" view-name="/orm/orm"/>
+    <mvc:view-controller path="/scope.html" view-name="/scope/scope"/>
+    <mvc:view-controller path="/maintenance.html" view-name="/maintenance"/>
+    <mvc:view-controller path="/security.html" view-name="/security/security"/>
+    <mvc:view-controller path="/controller.html" view-name="/controller/controllerView"/>
+    
+    <!-- AngularViews -->
+    <mvc:view-controller path="/angularjs.html" view-name="/angularjs/angularjs"/>
+    <mvc:view-controller path="/jsonstringify.html" view-name="/angularjs/jsonstringify"/>
+    <mvc:view-controller path="/ng-init.html" view-name="/angularjs/ng-init"/>
+    <mvc:view-controller path="/ng-repeat.html" view-name="/angularjs/ng-repeat"/>
+    <mvc:view-controller path="/ng-bind-model.html" view-name="/angularjs/ng-bind-model"/>
+    <mvc:view-controller path="/ng-click-show-hide.html" view-name="/angularjs/ng-click-show-hide"/>
+    <mvc:view-controller path="/ng-if-switch.html" view-name="/angularjs/ng-if-switch"/>
+    <mvc:view-controller path="/httpresource.html" view-name="/angularjs/httpresource"/>
+    <mvc:view-controller path="/directive.html" view-name="/angularjs/directive"/> 
+    <mvc:view-controller path="/filter.html" view-name="/angularjs/filter"/>
+    <mvc:view-controller path="/expression.html" view-name="/angularjs/expression"/>
+    <mvc:view-controller path="/formvalidation.html" view-name="/angularjs/formvalidation"/>
+    <mvc:view-controller path="/ng-controller.html" view-name="/angularjs/ng-controller"/>       
+    <mvc:view-controller path="/ng-class.html" view-name="/angularjs/ng-class"/>     
+    <mvc:view-controller path="/two-way-databinding.html" view-name="/angularjs/two-way-databinding"/> 
+    <mvc:view-controller path="/dependency-injection.html" view-name="/angularjs/dependency-injection"/> 
+    <mvc:view-controller path="/routing.html" view-name="/angularjs/routing"/>  
+    
+     
+    <!-- File Upload bean config-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+     	<!-- set the maximum file size in bytes -->
+    	<property name="maxUploadSize" value="1000000"/>
+	</bean>
+    
+    <!--Excel and PDF xml view configuration -->
+  <!--   <bean class="org.springframework.web.servlet.view.XmlViewResolver">
+       <property name="order" value="0" />
+	   <property name="location">
+	       <value>/WEB-INF/classes/excel-pdf-config.xml</value>
+	   </property>	   
+	</bean> -->
+	
+	<!-- ViewResolver bean config for mapping strings to jsp views -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+	    <!-- Example: a logical view name of 'showMessage' is mapped to '/WEB-INF/jsp/showMessage.jsp' -->
+	    <property name="order" value="1" />    
+	    <property name="prefix" value="/WEB-INF/view/"/>
+	    <property name="suffix" value=".jsp"/>   	     
+	</bean>
+ 	
+ 	<!-- Static Resources Configuration (get access to static sources such as CSS and JavaScript files) -->
+ 	<mvc:resources mapping="/resources/**" location="/resources/" />
+ 	<!-- themes can be put in different folder such as 
+ 		<mvc:resources mapping="/resources/**" location="/resources/themeBlue" />
+ 		<mvc:resources mapping="/resources/**" location="/resources/themeGreen" />
+ 	 -->
+   
+</beans>

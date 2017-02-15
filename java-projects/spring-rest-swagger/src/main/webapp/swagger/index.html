@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Swagger UI - Test API</title>
+        <link href='//fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'/>
+        <link href='scss/reset.css' media='screen' rel='stylesheet' type='text/css'/>
+        <link href='scss/screen.css' media='screen' rel='stylesheet' type='text/css'/>
+        <link href='scss/reset.css' media='print' rel='stylesheet' type='text/css'/>
+        <link href='scss/screen.css' media='print' rel='stylesheet' type='text/css'/>
+        <script type="text/javascript" src="slib/shred.bundle.js"></script>
+        <script src='slib/jquery-1.8.0.min.js' type='text/javascript'></script>
+        <script src='slib/jquery.slideto.min.js' type='text/javascript'></script>
+        <script src='slib/jquery.wiggle.min.js' type='text/javascript'></script>
+        <script src='slib/jquery.ba-bbq.min.js' type='text/javascript'></script>
+        <script src='slib/handlebars-1.0.0.js' type='text/javascript'></script>
+        <script src='slib/underscore-min.js' type='text/javascript'></script>
+        <script src='slib/backbone-min.js' type='text/javascript'></script>
+        <script src='slib/swagger.js' type='text/javascript'></script>
+        <script src='swagger-ui.js' type='text/javascript'></script>
+        <script src='slib/highlight.7.3.pack.js' type='text/javascript'></script>
+
+        <!-- enabling this will enable oauth2 implicit scope support -->
+        <script src='slib/swagger-oauth.js' type='text/javascript'></script>
+
+        <script type="text/javascript">
+            
+            var getBase = function () {
+
+        var parser = document.createElement('a');
+        parser.href = window.location.href;
+        var baseWithFile = parser.pathname;
+        var base = baseWithFile.substring(0, baseWithFile.lastIndexOf("/"));
+        
+        var splitBase=base.split('/');
+        if(splitBase.length>2){
+            console.log(splitBase.length);
+            base=splitBase[1];
+        }
+        
+        console.log(base);
+
+        
+        return parser.protocol+"//"+parser.host+"/"+base;
+    };
+    
+            function parse(val) {
+                var result = undefined,
+                        tmp = [];
+                location.search
+//                        .replace ( "?", "" ) 
+                        // this is better, there might be a question mark inside
+                        .substr(1)
+                        .split("&")
+                        .forEach(function (item) {
+                            tmp = item.split("=");
+                            if (tmp[0] === val)
+                                result = decodeURIComponent(tmp[1]);
+                        });
+                return result;
+            }
+            
+            
+            
+            $(function () {
+                var BaseURL = parse('pathToAPI');
+                
+                if(undefined === BaseURL){
+                    BaseURL = getBase()+'/api/';
+                }
+                
+                BaseURL+='api-docs';
+                
+                 
+
+                window.swaggerUi = new SwaggerUi({
+                    url: BaseURL,
+                    dom_id: "swagger-ui-container",
+                    supportedSubmitMethods: ['get', 'post', 'put', 'delete'],
+                    onComplete: function (swaggerApi, swaggerUi) {
+                        log("Loaded SwaggerUI");
+
+                        if (typeof initOAuth == "function") {
+                            /*
+                             initOAuth({
+                             clientId: "your-client-id",
+                             realm: "your-realms",
+                             appName: "your-app-name"
+                             });
+                             */
+                        }
+                        $('pre code').each(function (i, e) {
+                            hljs.highlightBlock(e)
+                        });
+                    },
+                    onFailure: function (data) {
+                        log("Unable to Load SwaggerUI");
+                    },
+                    docExpansion: "none",
+                    sorter: "alpha"
+                });
+                window.authorizations.add("Accept", new ApiKeyAuthorization("Accept", "application/json", "header"));
+
+                $('#input_apiKey').change(function () {
+                    var key = $('#input_apiKey')[0].value;
+                    log("key: " + key);
+                    if (key && key.trim() != "") {
+                        log("added key " + key);
+                        window.authorizations.add("key", new ApiKeyAuthorization("api_key", key, "query"));
+                    }
+                })
+                window.swaggerUi.load();
+            });
+
+
+        </script>
+    </head>
+
+    <body class="swagger-section">
+
+
+        <div id="message-bar" class="swagger-ui-wrap">&nbsp;</div>
+        <div id="swagger-ui-container" class="swagger-ui-wrap"></div>
+    </body>
+</html>
