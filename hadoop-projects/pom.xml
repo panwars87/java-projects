@@ -102,5 +102,6 @@
 		<module>map-reduce</module>
 		<module>kafka-api</module>
 		<module>hdfs-api</module>
+		<module>pig-udfs</module>
 	</modules>
 </project>
