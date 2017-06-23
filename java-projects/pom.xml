@@ -18,5 +18,8 @@
 		<module>spring-rest-swagger</module>
 		<module>spring-web</module>
 		<module>springmvc-angularjs-html5</module>
+
+
+		<module>junit-cucumber</module>
 	</modules>
 </project>
