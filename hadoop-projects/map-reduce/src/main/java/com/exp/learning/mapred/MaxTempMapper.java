@@ -31,6 +31,6 @@ public class MaxTempMapper extends Mapper<LongWritable, Text, Text, Text>{
 			context.write(tempKey, tempVal);
 		}else{
 			context.getCounter(MaxTemp.ERROR_LINES).increment(1);
-		}	
+		}
 	}
 }

@@ -12,6 +12,7 @@ import org.apache.hadoop.util.ToolRunner;
 
 /**
  * @author spanwar
+ * How to Run: hadoop jar mreduce-api.jar com.exp.learning.mapred.AlphabetTest -D mapred.reduce.tasks=3 /user/adm-spanwar/mapred/input/alphabet/ /user/adm-spanwar/mapred/output/alphabet/
  *
  */
 public class AlphabetTest extends Configured implements Tool{

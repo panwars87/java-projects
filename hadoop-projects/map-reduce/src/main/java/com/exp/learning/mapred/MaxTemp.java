@@ -18,7 +18,7 @@ import org.apache.hadoop.util.ToolRunner;
 
 /**
  * @author spanwar
- *
+ * How to run: hadoop jar mreduce-api.jar com.exp.learning.mapred.MaxTemp /user/adm-spanwar/mapred/input/maxtemp/ /user/adm-spanwar/mapred/output/maxtemp/
  */
 public class MaxTemp extends Configured implements Tool{
 
@@ -36,6 +36,7 @@ public class MaxTemp extends Configured implements Tool{
 			throws IOException, ClassNotFoundException, InterruptedException {
 		if(args.length < 2){
 			System.err.println("Input and Output parameter are required");
+			ToolRunner.printGenericCommandUsage(System.err);
 			return -1;
 		}
 		System.out.println("Running MaxTemp Program");
