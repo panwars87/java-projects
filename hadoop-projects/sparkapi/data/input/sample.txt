@@ -1,0 +1,4 @@
+Hi my name is shashant
+this is a sample apache spark
+word count program by shashant
+spark is good
