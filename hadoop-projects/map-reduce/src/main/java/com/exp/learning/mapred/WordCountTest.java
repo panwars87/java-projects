@@ -1,6 +1,4 @@
-/**
- * 
- */
+/*
 package com.exp.learning.mapred;
 
 import static org.junit.Assert.*;
@@ -21,10 +19,12 @@ import org.junit.Test;
 import in.edureka.wordcount.WordCountMapper;
 import in.edureka.wordcount.WordCountReducer;
 
+*/
 /**
  * @author spanwar
  *
- */
+ *//*
+
 public class WordCountTest {
 
 	MapReduceDriver<LongWritable, Text, Text, IntWritable, Text, IntWritable> mapReduceDriver;
@@ -76,3 +76,4 @@ public class WordCountTest {
 	}
 
 }
+*/

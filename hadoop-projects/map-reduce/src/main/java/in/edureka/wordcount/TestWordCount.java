@@ -1,3 +1,4 @@
+/*
 package in.edureka.wordcount;
 
 import java.io.IOException;
@@ -64,3 +65,4 @@ public class TestWordCount {
 		mapReduceDriver.runTest();
 	}
 }
+*/

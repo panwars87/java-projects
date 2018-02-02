@@ -5,6 +5,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 /**
   * Created by spanwar on 7/10/17.
   */
+
 object SampleTest {
   def main(args : Array[String]): Unit ={
     val conf = new SparkConf().setAppName("IQ Simple Spark App").setMaster("local[*]")
